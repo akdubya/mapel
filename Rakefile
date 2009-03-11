@@ -9,7 +9,7 @@ task :default => [:test]
 task :spec => :test
 
 name = 'mapel'
-version = '0.1.2'
+version = '0.1.3'
 
 spec = Gem::Specification.new do |s|
   s.name = name

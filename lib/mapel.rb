@@ -14,6 +14,11 @@ module Mapel
     Mapel::Engine.const_get(camelize(engine)).render(source)
   end
 
+  # Mapel.list
+  def self.list(engine = :image_magick)
+    Mapel::Engine.const_get(camelize(engine)).list
+  end
+
   class Engine
     attr_reader :command, :status, :output
     attr_accessor :commands
@@ -40,6 +45,12 @@ module Mapel
         im.commands << 'convert'
         im.commands << source unless source.nil?
         im
+      end
+
+      def self.list(type = nil)
+        im = new
+        im.commands << 'convert -list'
+        im.run
       end
 
       def crop(*args)

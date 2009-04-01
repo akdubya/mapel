@@ -170,7 +170,7 @@ module Mapel
       str << 'x' if @height > 0
       str << "%g" % @height if @height > 0
       str << "%+d%+d" % [@x, @y] if (@x != 0 || @y != 0 || crop)
-      str << RFLAGS.key(@flag).to_s
+      str << (RFLAGS.respond_to?(:key) ? RFLAGS.key(@flag) : RFLAGS.index(@flag)).to_s
     end
   end
 

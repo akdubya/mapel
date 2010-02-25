@@ -104,9 +104,14 @@ module Mapel
       end
 
       def to_info_hash
-        meta = {}
-        meta[:dimensions] = @output.split(' ')[2].split('x').map { |d| d.to_i }
-        meta
+        meta = @output.split(' ')
+        {
+          :path       => meta[0],
+          :format     => meta[1],
+          :dimensions => meta[2].split('x').map {|d| d.to_i},
+          :depth      => meta[4],
+          :size       => meta[6]
+        }
       end
     end
   end

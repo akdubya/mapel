@@ -24,8 +24,12 @@ describe Mapel do
   end
 
   describe "#info" do
-    it "should return image dimensions" do
+    it "should return basic image metadata" do
+      Mapel.info(@logo)[:path].should == @logo
+      Mapel.info(@logo)[:format].should == 'JPEG'
       Mapel.info(@logo)[:dimensions].should == [572, 591]
+      Mapel.info(@logo)[:depth].should == '8-bit'
+      Mapel.info(@logo)[:size].should == '95.1kb'
     end
   end
 

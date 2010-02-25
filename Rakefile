@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake'
 
 name = 'mapel'
-version = '0.1.5'
+version = '0.1.6'
 
 begin
   require 'jeweler'

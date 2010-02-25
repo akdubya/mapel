@@ -74,26 +74,8 @@ module Mapel
       end
 
       def resize!(*args)
-        @commands << lambda {
-          cmd = self.class.new
-          width, height = Geometry.new(*args).dimensions
-          if @source
-            origin_width, origin_height = Mapel.info(@source)[:dimensions]
-
-            # Crop dimensions should not exceed original dimensions.
-            width = [width, origin_width].min
-            height = [height, origin_height].min
-
-            if width != origin_width || height != origin_height
-              scale = [width/origin_width.to_f, height/origin_height.to_f].max
-              cmd.resize((scale*(origin_width+0.5)), (scale*(origin_height+0.5)))
-            end
-            cmd.crop(width, height).to_preview
-          else
-            "\{crop_resized #{args}\}"
-          end
-        }
-        self
+        width, height = Geometry.new(*args).dimensions
+        resize("#{width}x#{height}^").crop(width, height).repage
       end
 
       def scale(*args)
@@ -132,23 +114,15 @@ module Mapel
   class Geometry
     attr_accessor :width, :height, :x, :y, :flag
 
-    FLAGS = ['', '%', '<', '>', '!', '@']
-    RFLAGS = {
-      '%' => :percent,
-      '!' => :aspect,
-      '<' => :<,
-      '>' => :>,
-      '@' => :area
-    }
+    FLAGS = ['', '%', '<', '>', '!', '@', '^']
 
     # Regex parser for geometry strings
-    RE = /\A(\d*)(?:x(\d+)?)?([-+]\d+)?([-+]\d+)?([%!<>@]?)\Z/
+    RE = /\A(\d*)(?:x(\d+)?)?([-+]\d+)?([-+]\d+)?([%!<>@\^]?)\Z/
 
     def initialize(*args)
       if (args.length == 1) && (args.first.kind_of?(String))
         raise(ArgumentError, "Invalid geometry string") unless m = RE.match(args.first)
         args = m.to_a[1..5]
-        args[4] = args[4] ? RFLAGS[args[4]] : nil
       end
       @width = args[0] ? args[0].to_i.round : 0
       @height = args[1] ? args[1].to_i.round : 0
@@ -156,7 +130,8 @@ module Mapel
       raise(ArgumentError, "Height must be >= 0") if @height < 0
       @x = args[2] ? args[2].to_i : 0
       @y = args[3] ? args[3].to_i : 0
-      @flag = (args[4] && RFLAGS.has_value?(args[4])) ? args[4] : nil
+      raise(ArgumentError, "Flags must be in: #{FLAGS.inspect}") if args[4] && !FLAGS.include?(args[4])
+      @flag = args[4]
     end
 
     def dimensions
@@ -170,7 +145,8 @@ module Mapel
       str << 'x' if @height > 0
       str << "%g" % @height if @height > 0
       str << "%+d%+d" % [@x, @y] if (@x != 0 || @y != 0 || crop)
-      str << (RFLAGS.respond_to?(:key) ? RFLAGS.key(@flag) : RFLAGS.index(@flag)).to_s
+      str << @flag if @flag
+      str
     end
   end
 

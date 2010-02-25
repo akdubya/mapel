@@ -51,7 +51,7 @@ describe Mapel do
     it "should be able to crop-resize an image" do
       cmd = Mapel(@logo).gravity(:west).resize!('50x100').to(@output + '/crop_resized.jpg').run
       cmd.status.should == true
-      Mapel.info(@output + '/crop_resized.jpg')[:dimensions].should == [50, 99]
+      Mapel.info(@output + '/crop_resized.jpg')[:dimensions].should == [50, 100]
     end
 
     it "should allow arbitrary addition of commands to the queue" do

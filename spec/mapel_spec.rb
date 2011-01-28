@@ -2,9 +2,10 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 
 describe Mapel do
   before do
-    @input    = File.dirname(__FILE__) + '/fixtures'
-    @output   = File.dirname(__FILE__) + '/output'
-    @logo     = @input + '/ImageMagick.jpg'
+    @input      = File.dirname(__FILE__) + '/fixtures'
+    @output     = File.dirname(__FILE__) + '/output'
+    @logo       = @input + '/ImageMagick.jpg'
+    @multi_word = @input + '/multi-word file.jpg'
   end
 
   after do
@@ -29,7 +30,11 @@ describe Mapel do
       Mapel.info(@logo)[:format].should == 'JPEG'
       Mapel.info(@logo)[:dimensions].should == [572, 591]
       Mapel.info(@logo)[:depth].should == '8-bit'
-      Mapel.info(@logo)[:size].should == '95.1kb'
+      Mapel.info(@logo)[:size].should == '97.4KB'
+    end
+
+    it "should be able to read files with spaces in the filename" do
+      Mapel.info(@multi_word)[:path].should == @multi_word
     end
   end
 
@@ -61,7 +66,13 @@ describe Mapel do
     it "should allow arbitrary addition of commands to the queue" do
       cmd = Mapel(@logo).gravity(:west)
       cmd.resize(50, 50)
-      cmd.to_preview.should == "convert #{@logo} -gravity west -resize \"50x50\""
+      cmd.to_preview.should == "convert \"#{@logo}\" -gravity west -resize \"50x50\""
+    end
+
+    it "should be able to handle input filenames containing spaces" do
+      cmd = Mapel(@multi_word).resize('100x').to(@output + '/resized.jpg').run
+      cmd.status.should == true
+      Mapel.info(@output + '/resized.jpg')[:dimensions].should == [100, 103]
     end
   end
 end

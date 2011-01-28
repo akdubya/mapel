@@ -35,14 +35,14 @@ module Mapel
       def self.info(source)
         im = new
         im.commands << 'identify'
-        im.commands << source
+        im.commands << source.inspect
         im.run.to_info_hash
       end
 
       def self.render(source = nil)
         im = new
         im.commands << 'convert'
-        im.commands << source unless source.nil?
+        im.commands << source.inspect unless source.nil?
         im
       end
 
@@ -104,12 +104,14 @@ module Mapel
 
       def to_info_hash
         meta = @output.split(' ')
+
+        # Count backwards as an image's path may contain a space
         {
-          :path       => meta[0],
-          :format     => meta[1],
-          :dimensions => meta[2].split('x').map {|d| d.to_i},
-          :depth      => meta[4],
-          :size       => meta[6]
+          :path       => meta[0..-9].join(' '),
+          :format     => meta[-8],
+          :dimensions => meta[-7].split('x').map {|d| d.to_i},
+          :depth      => meta[-5],
+          :size       => meta[-3]
         }
       end
     end

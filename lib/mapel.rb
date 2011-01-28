@@ -83,7 +83,7 @@ module Mapel
       end
 
       def to(path)
-        @commands << path
+        @commands << path.inspect
         self
       end
 

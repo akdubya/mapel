@@ -74,5 +74,12 @@ describe Mapel do
       cmd.status.should == true
       Mapel.info(@output + '/resized.jpg')[:dimensions].should == [100, 103]
     end
+
+    it "should be able to handle output filenames containing spaces" do
+      output = @output + '/multi-word file.jpg'
+      cmd    = Mapel(@logo).resize('100x').to(output).run
+      cmd.status.should == true
+      Mapel.info(output)[:dimensions].should == [100, 103]
+    end
   end
 end

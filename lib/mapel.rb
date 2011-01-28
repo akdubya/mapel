@@ -23,8 +23,7 @@ module Mapel
     attr_reader :command, :status, :output
     attr_accessor :commands
 
-    def initialize(source = nil)
-      @source = source
+    def initialize
       @commands = []
     end
 
@@ -34,14 +33,14 @@ module Mapel
 
     class ImageMagick < Engine
       def self.info(source)
-        im = new(source)
+        im = new
         im.commands << 'identify'
         im.commands << source
         im.run.to_info_hash
       end
 
       def self.render(source = nil)
-        im = new(source)
+        im = new
         im.commands << 'convert'
         im.commands << source unless source.nil?
         im

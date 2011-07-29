@@ -83,6 +83,16 @@ module Mapel
         self
       end
 
+      def quality(level)
+      	@commands << "-quality #{level}"
+      	self
+      end	
+
+      def strip
+      	@commands << "-strip"
+      	self
+      end
+
       def to(path)
         @commands << path
         self
